@@ -1,138 +1,118 @@
-import React, { useState } from 'react';
-import { adminProfile } from '../../data/dummyData';
-import AdminSidebar from '../../components/AdminSidebar';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import AdminSidebar from "../../components/AdminSidebar";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const Reports = () => {
-  const [profile, setProfile] = useState(adminProfile);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [admin, setAdmin] = useState(null);
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
-  const handleProfileUpdate = (e) => {
-    e.preventDefault();
-    alert(`Simulating profile update for email: ${profile.email}`);
+  // Fetch admin profile
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/admin/profile`);
+      setAdmin(res.data);
+      setEmail(res.data.email);
+    } catch (err) {
+      console.error("Error fetching admin profile:", err);
+      toast.error("Failed to load admin profile");
+    }
   };
 
-  const handlePasswordChange = (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert(' Passwords do not match!');
-      return;
+  // Update email
+  const handleUpdateEmail = async () => {
+    try {
+      await axios.put(`${API_URL}/api/admin/profile`, { email });
+      toast.success("Email updated successfully");
+      fetchProfile();
+    } catch (err) {
+      console.error("Error updating email:", err);
+      toast.error("Failed to update email");
     }
+  };
+
+  // Change password
+  const handleChangePassword = async () => {
     if (newPassword.length < 6) {
-      alert('⚠️ Password must be at least 6 characters long.');
+      toast.warning("Password must be at least 6 characters long");
       return;
     }
-    alert(' Password changed successfully (simulated).');
-    setNewPassword('');
-    setConfirmPassword('');
+    try {
+      await axios.put(`${API_URL}/api/admin/change-password`, { newPassword });
+      toast.success("Password changed successfully");
+      setNewPassword("");
+    } catch (err) {
+      console.error("Error changing password:", err);
+      toast.error("Failed to change password");
+    }
   };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#f9fafb] text-gray-800">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <AdminSidebar />
+      <div className="md:w-64 w-full md:fixed md:h-full">
+        <AdminSidebar />
+      </div>
 
       {/* Main Content */}
-      <main
-        className="flex-1 p-8 overflow-y-auto transition-all duration-300"
-        style={{ marginLeft: '260px' }} // matches sidebar width
-      >
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-semibold text-[#00ACC1] mb-2">
-            Admin Settings 
-          </h1>
-          <p className="text-gray-600 mb-8">
-            Manage your profile details and update your password securely.
-          </p>
+      <div className="flex-1 md:ml-64 p-6 sm:p-8 transition-all">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800 text-center md:text-left">
+          Admin Profile
+        </h1>
 
-          {/* Profile Information Card */}
-          <section
-            className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
-          >
-            <h2 className="text-xl font-semibold text-[#00ACC1] mb-4">
-              Profile Information
-            </h2>
-            <form onSubmit={handleProfileUpdate}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  value={profile.username}
-                  disabled
-                  className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 cursor-not-allowed"
-                />
-              </div>
-
-              <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) =>
-                    setProfile({ ...profile, email: e.target.value })
-                  }
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00ACC1]"
-                />
-              </div>
-
+        {admin ? (
+          <div className="bg-white shadow-lg rounded-2xl p-6 sm:p-8 max-w-lg mx-auto md:mx-0 w-full">
+            {/* Email Update Section */}
+            <div className="mb-6">
+              <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm sm:text-base"
+              />
               <button
-                type="submit"
-                className="bg-[#00ACC1] text-white px-5 py-2 rounded-lg hover:bg-[#0092a7] transition-colors"
+                onClick={handleUpdateEmail}
+                className="mt-3 bg-teal-500 text-white w-full sm:w-auto px-4 py-2 rounded-lg hover:bg-teal-600 transition text-sm sm:text-base"
               >
-                Update Profile
+                Update Email
               </button>
-            </form>
-          </section>
+            </div>
 
-          {/* Password Change Card */}
-          <section
-            className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
-          >
-            <h2 className="text-xl font-semibold text-[#FF7043] mb-4">
-              Change Password
-            </h2>
-            <form onSubmit={handlePasswordChange}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF7043]"
-                />
-              </div>
-
-              <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF7043]"
-                />
-              </div>
-
+            {/* Password Change Section */}
+            <div className="mt-6">
+              <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
+                New Password
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm sm:text-base"
+              />
               <button
-                type="submit"
-                className="bg-[#FF7043] text-white px-5 py-2 rounded-lg hover:bg-[#e66035] transition-colors"
+                onClick={handleChangePassword}
+                className="mt-3 bg-blue-500 text-white w-full sm:w-auto px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm sm:text-base"
               >
                 Change Password
               </button>
-            </form>
-          </section>
-        </div>
-      </main>
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center mt-10">
+            Loading admin data...
+          </p>
+        )}
+      </div>
     </div>
   );
 };

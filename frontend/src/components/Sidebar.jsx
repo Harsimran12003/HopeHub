@@ -11,6 +11,7 @@ import {
   FaHandHoldingHeart,
   FaTruck,
   FaBars,
+  FaTimes,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -22,30 +23,29 @@ const Sidebar = ({ children }) => {
     localStorage.getItem("sidebarCollapsed") === "true"
   );
   const [openServices, setOpenServices] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [userData, setUserData] = useState({
     fullName: "Hope Hero",
     profilePhoto: "",
   });
 
-  // 🧩 Fetch current user data
+  // Handle resizing
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Fetch user info
   useEffect(() => {
     const fetchUserProfile = async () => {
-      let token = null;
       try {
-        const stored = localStorage.getItem("userInfo");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          token = parsed?.token || parsed?.data?.token || null;
-        }
-      } catch (e) {}
+        let token =
+          JSON.parse(localStorage.getItem("userInfo"))?.token ||
+          localStorage.getItem("token");
 
-      if (!token) token = localStorage.getItem("token");
-      if (!token) {
-        console.warn("No token found in localStorage");
-        return;
-      }
-
-      try {
+        if (!token) return;
         const res = await axios.get(`${API_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -58,38 +58,62 @@ const Sidebar = ({ children }) => {
         console.error("Error fetching user profile:", error);
       }
     };
-
     fetchUserProfile();
   }, []);
 
-  // 💾 Save sidebar state in localStorage
   const handleToggleSidebar = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
     localStorage.setItem("sidebarCollapsed", newState);
   };
 
+  const toggleMobileSidebar = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   return (
     <div className="flex">
+      {/* Mobile Overlay */}
+      {isMobile && mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setMobileOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-screen transition-all duration-300 shadow-xl
-          ${isCollapsed ? "w-20" : "w-64"}
-          bg-gradient-to-b from-[#00ACC1] via-[#26C6DA] to-[#4DD0E1]
+        className={`fixed top-0 left-0 h-screen z-50 transition-all duration-300 shadow-xl
+          ${
+            isMobile
+              ? `bg-gradient-to-b from-[#00ACC1] via-[#26C6DA] to-[#4DD0E1]
+                 w-64 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`
+              : `${isCollapsed ? "w-20" : "w-64"} bg-gradient-to-b from-[#00ACC1] via-[#26C6DA] to-[#4DD0E1]`
+          }
           backdrop-blur-md bg-opacity-90 border-r border-white/20 flex flex-col justify-between`}
       >
         {/* Scrollable content wrapper */}
-        <div className="flex flex-col h-full">
-          {/* Toggle */}
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* Toggle (Desktop + Mobile Close) */}
           <div
-            className="flex justify-end p-4 cursor-pointer text-white"
-            onClick={handleToggleSidebar}
-            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            className="flex justify-between items-center p-4 text-white"
           >
-            <FaBars size={22} />
+            <FaBars
+              size={22}
+              className={`cursor-pointer ${isMobile ? "hidden" : "block"}`}
+              onClick={handleToggleSidebar}
+              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            />
+            {isMobile && (
+              <FaTimes
+                size={22}
+                className="cursor-pointer"
+                onClick={() => setMobileOpen(false)}
+              />
+            )}
           </div>
 
-          {/* Profile Section */}
+          {/* Profile */}
           <div className="text-center px-2 mb-4">
             <div className="flex justify-center mb-2">
               {userData.profilePhoto ? (
@@ -97,23 +121,30 @@ const Sidebar = ({ children }) => {
                   src={
                     userData.profilePhoto.startsWith("http")
                       ? userData.profilePhoto
-                      : `${API_URL}${userData.profilePhoto.startsWith("/") ? "" : "/"}${userData.profilePhoto}`
+                      : `${API_URL}${
+                          userData.profilePhoto.startsWith("/") ? "" : "/"
+                        }${userData.profilePhoto}`
                   }
                   alt="User"
                   className={`rounded-full object-cover border-2 border-white shadow-md transition-all duration-300 ${
-                    isCollapsed ? "w-10 h-10" : "w-16 h-16"
+                    isCollapsed && !isMobile ? "w-10 h-10" : "w-16 h-16"
                   }`}
                 />
               ) : (
                 <FaUserCircle
-                  size={isCollapsed ? 40 : 60}
+                  size={isCollapsed && !isMobile ? 40 : 60}
                   className="text-white/90 transition-all duration-300"
                 />
               )}
             </div>
-            {!isCollapsed && (
+            {!isCollapsed && !isMobile && (
               <p className="text-white font-semibold text-base truncate">
                 Welcome, {userData.fullName} 🌟
+              </p>
+            )}
+            {isMobile && (
+              <p className="text-white font-semibold text-base truncate">
+                {userData.fullName}
               </p>
             )}
           </div>
@@ -124,43 +155,44 @@ const Sidebar = ({ children }) => {
               to="/home"
               icon={<FaHome />}
               text="Home"
-              collapsed={isCollapsed}
+              collapsed={isCollapsed && !isMobile}
             />
             <SidebarLink
               to="/about"
               icon={<FaInfoCircle />}
               text="About"
-              collapsed={isCollapsed}
+              collapsed={isCollapsed && !isMobile}
             />
             <SidebarLink
               to="/how-it-works"
               icon={<FaHandsHelping />}
               text="How It Works"
-              collapsed={isCollapsed}
+              collapsed={isCollapsed && !isMobile}
             />
 
             {/* Services */}
             <div
               onClick={() => setOpenServices(!openServices)}
-              title="Services"
               className={`flex items-center gap-3 px-5 py-2.5 rounded-lg cursor-pointer transition-all duration-200 
               hover:bg-white/20 ${openServices ? "bg-white/25" : ""}`}
             >
               <FaGift />
-              {!isCollapsed && <span className="font-medium">Services ▾</span>}
+              {(!isCollapsed || isMobile) && (
+                <span className="font-medium">Services ▾</span>
+              )}
             </div>
 
-            {openServices && !isCollapsed && (
+            {openServices && (!isCollapsed || isMobile) && (
               <div className="flex flex-col ml-8 mt-1 space-y-2 text-sm">
-                <SidebarSublink
-                  to="/celebrations"
-                  icon={<FaCalendarAlt />}
-                  text="Celebrations"
-                />
                 <SidebarSublink
                   to="/donate"
                   icon={<FaHandHoldingHeart />}
                   text="Donate"
+                />
+                <SidebarSublink
+                  to="/celebrations"
+                  icon={<FaCalendarAlt />}
+                  text="Celebrations"
                 />
               </div>
             )}
@@ -169,13 +201,13 @@ const Sidebar = ({ children }) => {
               to="/pickup-schedule"
               icon={<FaTruck />}
               text="Pickup Schedule"
-              collapsed={isCollapsed}
+              collapsed={isCollapsed && !isMobile}
             />
             <SidebarLink
               to="/contact"
               icon={<FaPhoneAlt />}
               text="Contact"
-              collapsed={isCollapsed}
+              collapsed={isCollapsed && !isMobile}
             />
           </nav>
         </div>
@@ -187,7 +219,7 @@ const Sidebar = ({ children }) => {
             title="Logout"
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-white font-semibold hover:bg-white/25 transition-all duration-200"
           >
-            <FaSignOutAlt /> {!isCollapsed && <span>Logout</span>}
+            <FaSignOutAlt /> {(!isCollapsed || isMobile) && <span>Logout</span>}
           </Link>
         </div>
       </div>
@@ -195,9 +227,18 @@ const Sidebar = ({ children }) => {
       {/* Main Content */}
       <div
         className={`transition-all duration-300 p-6 flex-1 ${
-          isCollapsed ? "ml-20" : "ml-64"
+          isMobile ? "ml-0" : isCollapsed ? "ml-20" : "ml-64"
         }`}
       >
+        {/* Mobile menu button */}
+        {isMobile && (
+          <button
+            onClick={toggleMobileSidebar}
+            className="p-3 mb-4 rounded-lg bg-[#00ACC1] text-white shadow-md"
+          >
+            <FaBars />
+          </button>
+        )}
         {children}
       </div>
     </div>

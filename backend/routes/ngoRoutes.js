@@ -1,5 +1,5 @@
 import express from "express";
-import { addNGO, getAllNGOs, getNGOProfile,  updateNGOProfile, updateNGO, deleteNGO } from "../controllers/ngoController.js";
+import { addNGO, getAllNGOs, getNGOProfile,  updateNGOProfile, updateNGO, deleteNGO, getNGOById } from "../controllers/ngoController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.get("/profile", protect,  getNGOProfile);
 router.put("/profile",  protect, updateNGOProfile);
 
 router.put("/:id", updateNGO);       
-router.delete("/:id", deleteNGO);    
+router.delete("/:id", deleteNGO);   
+router.get("/:id", getNGOById); 
 
 export default router;

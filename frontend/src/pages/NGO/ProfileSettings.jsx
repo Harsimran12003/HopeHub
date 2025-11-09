@@ -50,34 +50,40 @@ const ProfileSettings = () => {
     }
   };
 
-  if (loading) return <div className="p-10 text-lg">Loading...</div>;
+  if (loading)
+    return <div className="p-10 text-lg text-center">Loading...</div>;
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* Sidebar */}
       <NGOSidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
-      <div className="flex-1 p-6 space-y-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          {/* Header with Edit/Save Buttons */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold">Profile Information</h2>
+      {/* Main Content */}
+      <div className="flex-1 p-4 sm:p-6 md:p-8 space-y-8">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Profile Information
+            </h2>
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-[#00ACC1] text-white rounded hover:bg-[#028c9f] cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2 bg-[#00ACC1] text-white rounded hover:bg-[#028c9f] transition"
               >
                 ✏️ Edit Profile
               </button>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
+                  className="flex-1 sm:flex-none px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 cursor-pointer"
+                  className="flex-1 sm:flex-none px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition"
                 >
                   Cancel
                 </button>
@@ -85,21 +91,18 @@ const ProfileSettings = () => {
             )}
           </div>
 
-          {/* Logo Preview at Top */}
+          {/* Logo Section */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
               <img
-                src={
-                  logoPreview ||
-                  "https://via.placeholder.com/120?text=No+Logo"
-                }
+                src={logoPreview || "https://via.placeholder.com/120?text=No+Logo"}
                 alt="NGO Logo"
-                className="w-28 h-28 object-cover rounded-full border-2 border-gray-300 shadow-md"
+                className="w-24 sm:w-28 h-24 sm:h-28 object-cover rounded-full border-2 border-gray-300 shadow-md"
               />
               {isEditing && (
                 <label
                   htmlFor="logo-upload"
-                  className="absolute bottom-0 right-0 bg-[#00ACC1] text-white p-1.5 rounded-full cursor-pointer hover:bg-[#028c9f]"
+                  className="absolute bottom-0 right-0 bg-[#00ACC1] text-white p-2 rounded-full cursor-pointer hover:bg-[#028c9f]"
                 >
                   📷
                 </label>
@@ -116,56 +119,50 @@ const ProfileSettings = () => {
             <p className="mt-2 text-sm text-gray-500">Logo</p>
           </div>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {["name", "email", "address", "contactNumber", "timings"].map(
-              (field) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium capitalize">
-                    {field}
-                  </label>
-                  {isEditing ? (
-                    
-                    field === "contactNumber" ? (
-                      <input
-                        type="tel"
-                        name={field}
-                        value={details[field] || ""}
-                        onChange={(e) => {
-                          const digits = e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 10);
-                          setDetails({ ...details, [e.target.name]: digits });
-                        }}
-                        inputMode="numeric"
-                        pattern="\d{10}"
-                        maxLength={10}
-                        placeholder="Enter 10-digit contact number"
-                        className="border p-2 rounded w-full"
-                      />
-                    ) : (
-                      <input
-                        type={field === "email" ? "email" : "text"}
-                        name={field}
-                        value={details[field] || ""}
-                        onChange={(e) =>
-                          setDetails({ ...details, [e.target.name]: e.target.value })
-                        }
-                        className="border p-2 rounded w-full"
-                      />
-                    )
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {["name", "email", "address", "contactNumber", "timings"].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium capitalize mb-1">
+                  {field}
+                </label>
+                {isEditing ? (
+                  field === "contactNumber" ? (
+                    <input
+                      type="tel"
+                      name={field}
+                      value={details[field] || ""}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        setDetails({ ...details, [e.target.name]: digits });
+                      }}
+                      inputMode="numeric"
+                      maxLength={10}
+                      placeholder="Enter contact number"
+                      className="border p-2 rounded w-full"
+                    />
                   ) : (
-                    <p className="p-2 bg-gray-50 rounded">
-                      {details[field] || "-"}
-                    </p>
-                  )}
-                </div>
-              )
-            )}
+                    <input
+                      type={field === "email" ? "email" : "text"}
+                      name={field}
+                      value={details[field] || ""}
+                      onChange={(e) =>
+                        setDetails({ ...details, [e.target.name]: e.target.value })
+                      }
+                      className="border p-2 rounded w-full"
+                    />
+                  )
+                ) : (
+                  <p className="p-2 bg-gray-50 rounded break-words">
+                    {details[field] || "-"}
+                  </p>
+                )}
+              </div>
+            ))}
 
             {/* Bio */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium">Bio</label>
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium mb-1">Bio</label>
               {isEditing ? (
                 <textarea
                   name="bio"
@@ -173,7 +170,7 @@ const ProfileSettings = () => {
                   onChange={(e) =>
                     setDetails({ ...details, [e.target.name]: e.target.value })
                   }
-                  className="border p-2 rounded w-full"
+                  className="border p-2 rounded w-full h-24"
                 />
               ) : (
                 <p className="p-2 bg-gray-50 rounded whitespace-pre-line">
@@ -183,11 +180,11 @@ const ProfileSettings = () => {
             </div>
 
             {/* Categories */}
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium mb-2">
                 Accepted Categories
               </label>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 {Object.keys(details.categories || {}).map((cat) => (
                   <label key={cat} className="flex items-center gap-2">
                     <input
@@ -211,7 +208,7 @@ const ProfileSettings = () => {
             </div>
 
             {/* Events */}
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium mb-2">Events</label>
               {isEditing ? (
                 <textarea
@@ -223,14 +220,12 @@ const ProfileSettings = () => {
                       events: e.target.value.split(",").map((ev) => ev.trim()),
                     })
                   }
-                  className="border p-2 rounded w-full"
+                  className="border p-2 rounded w-full h-20"
                   placeholder="Comma-separated list (e.g., Blood Donation Camp, Fundraiser)"
                 />
               ) : (
                 <p className="p-2 bg-gray-50 rounded">
-                  {details.events?.length
-                    ? details.events.join(", ")
-                    : "-"}
+                  {details.events?.length ? details.events.join(", ") : "-"}
                 </p>
               )}
             </div>

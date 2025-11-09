@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 import {
   FaBirthdayCake,
   FaGift,
@@ -30,9 +30,9 @@ const AboutUsSection = () => {
   return (
     <Sidebar>
       <div style={styles.pageContainer}>
-        <section style={styles.section}>
-          {/* Left side text */}
-          <div style={styles.left}>
+        <section className="about-section" style={styles.section}>
+          {/* Left Text */}
+          <div className="about-left" style={styles.left}>
             <h2 style={styles.heading}>About HopeHub</h2>
             <p style={styles.text}>
               HopeHub is a social impact platform connecting donors with those
@@ -51,8 +51,8 @@ const AboutUsSection = () => {
             </p>
           </div>
 
-          {/* Right side feature cards */}
-          <div style={styles.right}>
+          {/* Right Cards */}
+          <div className="about-right" style={styles.right}>
             <Card
               icon={<FaBirthdayCake size={40} color={styles.icon.color} />}
               title="Birthday Celebrations"
@@ -84,14 +84,14 @@ const styles = {
   pageContainer: {
     background: "#f7f9fb",
     minHeight: "100vh",
-    padding: "30px",
+    padding: "20px",
   },
   section: {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    padding: "60px 5%",
+    padding: "50px 5%",
     background: "linear-gradient(135deg, #E3F2F2 0%, #FFF8F2 100%)",
     borderRadius: "16px",
     boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
@@ -99,7 +99,7 @@ const styles = {
   },
   left: {
     flex: "1 1 45%",
-    minWidth: "320px",
+    minWidth: "300px",
     background:
       "linear-gradient(135deg, rgba(0,172,193,1), rgba(38,198,218,1), rgba(77,208,225,1))",
     color: "#fff",
@@ -164,14 +164,56 @@ const styles = {
   },
 };
 
-// ✅ Add responsive adjustments
+// ✅ Responsive Styles
 const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-@media (max-width: 900px) {
-  section {
+styleSheet.innerHTML = `
+@media (max-width: 1024px) {
+  .about-section {
     flex-direction: column !important;
+    padding: 40px 5% !important;
   }
-  .right {
+  .about-left {
+    width: 100% !important;
+  }
+  .about-right {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 30px 4% !important;
+    gap: 25px !important;
+  }
+  .about-right {
+    grid-template-columns: 1fr !important;
+  }
+  .about-left {
+    padding: 25px !important;
+  }
+  .about-left h2 {
+    font-size: 1.8rem !important;
+  }
+  .about-left p {
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-section {
+    padding: 20px 3% !important;
+  }
+  .about-left {
+    padding: 20px !important;
+    text-align: center;
+  }
+  .about-left h2 {
+    font-size: 1.6rem !important;
+  }
+  .about-left p {
+    font-size: 0.9rem !important;
+  }
+  .about-right {
     grid-template-columns: 1fr !important;
   }
 }

@@ -6,7 +6,15 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const NGODashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [ngoName, setNgoName] = useState("NGO"); // default
+  const [ngoData, setNgoData] = useState({
+    name: "NGO",
+    logo: "",
+    tagline: "Empowering communities, changing lives.",
+    contactNumber: "N/A",
+    email: "contact@ngo.org",
+    address: "City, Country",
+  });
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const quotes = [
@@ -27,7 +35,6 @@ const NGODashboard = () => {
 
   useEffect(() => {
     const fetchNGOProfile = async () => {
-      // 1) robust token retrieval: try userInfo first, then token
       let token = null;
       try {
         const stored = localStorage.getItem("userInfo");
@@ -35,15 +42,11 @@ const NGODashboard = () => {
           const parsed = JSON.parse(stored);
           token = parsed?.token || parsed?.data?.token || null;
         }
-      } catch (err) {
-        // ignore JSON parse error
-      }
-      // fallback to older key if present
-      if (!token) token = localStorage.getItem("token");
+      } catch (err) {}
 
+      if (!token) token = localStorage.getItem("token");
       if (!token) {
-        // no token -> nothing to do
-        console.warn("No auth token found in localStorage (userInfo/token).");
+        console.warn("No auth token found.");
         return;
       }
 
@@ -52,64 +55,86 @@ const NGODashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Log full response for debugging
-        console.log("NGO profile response:", res.data);
-
-        // handle multiple possible shapes:
-        //  - { name: 'X', ... }
-        //  - { ngo: { name: 'X', ... } }
-        //  - { success: true, ngo: { ... } }
         const data = res.data;
-        const name =
-          data?.name ||
-          data?.ngo?.name ||
-          data?.ngo?.data?.name || // defensive
-          (Array.isArray(data) ? data[0]?.name : undefined);
-
-        setNgoName(name || "NGO");
+        const ngo = data?.ngo || data;
+        setNgoData({
+          name: ngo?.name || "NGO",
+          logo: ngo?.logo || "/default-logo.png",
+          tagline: ngo?.tagline || "Committed to making a difference.",
+          contactNumber: ngo?.contactNumber || "N/A",
+          email: ngo?.email || "contact@ngo.org",
+          address: ngo?.address || "Your City, Country",
+        });
       } catch (error) {
         console.error("Error fetching NGO profile:", error);
-        setNgoName("NGO");
       }
     };
 
     fetchNGOProfile();
   }, []);
 
-  const activities = [
-    { id: 1, activity: "Approved donation request from Rahul Sharma", date: "2025-09-25" },
-    { id: 2, activity: "Celebration request for Sarah Lee’s anniversary", date: "2025-09-24" },
-    { id: 3, activity: "Added new required item: Blankets", date: "2025-09-22" },
-    { id: 4, activity: "Profile details updated", date: "2025-09-20" },
-  ];
-
   return (
-    <div className="flex h-screen">
-      <NGOSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="md:block">
+        <NGOSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
 
-      <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out p-6">
-        <h1 className="text-3xl font-bold text-[#212121] mb-6">
-          Welcome back, {ngoName} 👋
-        </h1>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out p-4 sm:p-6 overflow-y-auto">
+        {/* Header for small screens */}
+        <div className="flex md:hidden items-center justify-between mb-6 w-full">
+          <button
+            onClick={toggleSidebar}
+            className="text-white bg-[#00ACC1] p-2 rounded-md shadow-md hover:bg-[#0095A8] transition"
+          >
+ 
+          </button>
 
-        <div className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-2xl shadow-lg p-10 flex items-center justify-center h-22 text-center mb-8 transition-all duration-700">
-          <p className="text-xl md:text-xl font-semibold max-w-2xl">
-            {quotes[currentQuote]}
-          </p>
+          <h1 className="text-lg sm:text-xl font-bold text-[#212121] text-right flex-1 ml-4">
+            Welcome, {ngoData.name} 👋
+          </h1>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-bold text-[#212121] mb-4">
-            Recent Activities
-          </h2>
-          <ul className="space-y-3">
-            {activities.map((act) => (
-              <li key={act.id} className="border-b last:border-none pb-2 text-gray-700">
-                <span className="font-medium">{act.activity}</span>
-                <div className="text-sm text-gray-500">{act.date}</div>
-              </li>
-            ))}
-          </ul>
+        {/* Welcome Header for Desktop */}
+        <h1 className="hidden md:block text-3xl font-bold text-[#212121] mb-6">
+          Welcome back, {ngoData.name} 👋
+        </h1>
+
+        {/* NGO Profile Card */}
+        <div className="bg-white shadow-md rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <img
+            src={ngoData.logo || "/default-logo.png"}
+            alt="NGO Logo"
+            className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-teal-400"
+          />
+          <div className="text-center sm:text-left">
+            <p className="text-gray-600 mb-3 text-sm sm:text-base">
+              {ngoData.tagline}
+            </p>
+
+            {/* Additional NGO Info */}
+            <div className="space-y-1 text-gray-700 text-sm sm:text-base">
+              <p>
+                <span className="font-medium">📜 Contact:</span>{" "}
+                {ngoData.contactNumber}
+              </p>
+              <p>
+                <span className="font-medium">📧 Email:</span> {ngoData.email}
+              </p>
+              <p>
+                <span className="font-medium">📍 Address:</span>{" "}
+                {ngoData.address}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Motivational Quote */}
+        <div className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-2xl shadow-lg p-6 sm:p-10 text-center mb-8 transition-all duration-700">
+          <p className="text-base sm:text-lg md:text-xl font-semibold max-w-2xl mx-auto leading-relaxed">
+            {quotes[currentQuote]}
+          </p>
         </div>
       </div>
     </div>

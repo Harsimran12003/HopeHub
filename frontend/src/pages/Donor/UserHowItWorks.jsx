@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 
 const HowItWorks = () => {
   const steps = [
@@ -39,14 +39,14 @@ const HowItWorks = () => {
 
   return (
     <Sidebar>
-      <section style={styles.section}>
+      <section className="how-section" style={styles.section}>
         <h2 style={styles.heading}>
           How <span style={{ color: "#00ACC1" }}>HopeHub</span> Works
         </h2>
         <p style={styles.subHeading}>Simple steps to make a meaningful impact</p>
 
-        {/* First row (3 cards) */}
-        <div style={styles.row}>
+        {/* First Row (3 cards) */}
+        <div className="how-row" style={styles.row}>
           {steps.slice(0, 3).map((step, index) => (
             <div
               key={index}
@@ -69,8 +69,8 @@ const HowItWorks = () => {
           ))}
         </div>
 
-        {/* Second row (2 cards, centered) */}
-        <div style={styles.rowCenter}>
+        {/* Second Row (2 cards, centered) */}
+        <div className="how-row-center" style={styles.rowCenter}>
           {steps.slice(3).map((step, index) => (
             <div
               key={index + 3}
@@ -131,6 +131,7 @@ const styles = {
   rowCenter: {
     display: "flex",
     justifyContent: "center",
+    flexWrap: "wrap",
     gap: "30px",
   },
   card: {
@@ -168,5 +169,59 @@ const styles = {
     lineHeight: "1.5",
   },
 };
+
+// ✅ Responsive Styling (Media Queries)
+const styleSheet = document.createElement("style");
+styleSheet.innerHTML = `
+@media (max-width: 1024px) {
+  .how-section {
+    padding: 50px 30px !important;
+  }
+  .how-row, .how-row-center {
+    gap: 25px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .how-section {
+    padding: 40px 20px !important;
+    margin: 15px !important;
+  }
+  .how-section h2 {
+    font-size: 2rem !important;
+  }
+  .how-section p {
+    font-size: 0.95rem !important;
+  }
+  .how-row, .how-row-center {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .how-row .card, .how-row-center .card {
+    width: 90% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .how-section {
+    padding: 30px 15px !important;
+  }
+  .how-section h2 {
+    font-size: 1.7rem !important;
+  }
+  .how-section p {
+    font-size: 0.9rem !important;
+  }
+  .how-row .card, .how-row-center .card {
+    width: 100% !important;
+  }
+  .numberCircle {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 16px !important;
+  }
+}
+`;
+document.head.appendChild(styleSheet);
 
 export default HowItWorks;

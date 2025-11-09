@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
-import PartnerNGOs from './pages/Donor/PartnerNGOs'
 import NGODashboard from './pages/NGO/NGODashboard'
 import DonationRequests from './pages/NGO/DonationRequests'
 import CelebrationRequests from './pages/NGO/CelebrationRequests'
@@ -12,32 +11,29 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import UserDashboard from "./pages/UserDashboard";
 import NGLoginPage from "./pages/NGLoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import Contact from "./pages/Contact";
-import CelebrationsPage from "./pages/CelebrationsPage";
-import NGODetailsPage from "./pages/NGODetailsPage";
-import DonatePage from "./pages/DonatePage";
-import NGODonateDetailsPage from "./pages/NGODonateDetailsPage";
-import PickupSchedulePage from "./pages/PickupSchedulePage";
-import Sidebar from "./components/Sidebar";
-import Footer from "./components/Footer";
-import AboutUsSection from "./components/AboutUsSection";
-import HowItWorks from "./components/HowItWorks";
+import Contact from "./pages/Donor/Contact";
+import CelebrationsPage from "./pages/Donor/CelebrationsPage";
+import NGODetailsPage from "./pages/Donor/NGODetailsPage";
+import DonatePage from "./pages/Donor/DonatePage";
+import NGODonateDetailsPage from "./pages/Donor/NGODonateDetailsPage";
+import PickupSchedulePage from "./pages/Donor/PickupSchedulePage";
+
 import ManageDonations from "./pages/Admin/ManageDonations";
 import ManageNGOs from "./pages/Admin/ManageNGOs";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import Reports from './pages/Admin/Reports'
-import UserAbout from './pages/UserAbout'
-import UserHowItWorks from './pages/UserHowItWorks'
+import UserAbout from './pages/Donor/UserAbout'
+import UserHowItWorks from './pages/Donor/UserHowItWorks'
 
 import './App.css';
-import UserHome from './pages/UserHome'
+import UserHome from './pages/Donor/UserHome'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<UserDashboard/>} />
-        <Route path="/partner-ngos" element={<PartnerNGOs/>} />
+        
         <Route path="ngo/dashboard" element={<NGODashboard/>} />
         <Route path="ngo/donations" element={<DonationRequests/>} />
         <Route path="ngo/celebrations" element={<CelebrationRequests/>} />

@@ -40,7 +40,7 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="/ngos" style={styles.link}>
+              <a href="/donate" style={styles.link}>
                 Find NGOs
               </a>
             </li>
@@ -56,19 +56,9 @@ const Footer = () => {
         <div style={styles.section}>
           <h3 style={styles.heading}>Get in Touch</h3>
           <p style={styles.contact}>
-            <FaEnvelope style={{ color: "#FF7043" }} /> &nbsp; support@hopehub.org
+            <FaEnvelope style={{ color: "#FF7043" }} /> &nbsp; hopehubdonation@gmail.com
           </p>
-          <div style={styles.socials}>
-            <a href="#" style={styles.socialIcon}>
-              <FaFacebookF />
-            </a>
-            <a href="#" style={styles.socialIcon}>
-              <FaInstagram />
-            </a>
-            <a href="#" style={styles.socialIcon}>
-              <FaTwitter />
-            </a>
-          </div>
+
         </div>
       </div>
 

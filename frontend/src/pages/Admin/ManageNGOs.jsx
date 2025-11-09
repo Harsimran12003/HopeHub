@@ -40,7 +40,6 @@ const ManageNGOs = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Add or Update NGO
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -77,7 +76,6 @@ const ManageNGOs = () => {
     }
   };
 
-  //  Edit NGO
   const handleEdit = (ngo) => {
     setFormData({
       name: ngo.name,
@@ -90,7 +88,6 @@ const ManageNGOs = () => {
     setShowModal(true);
   };
 
-  //  Delete NGO
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this NGO?")) {
       try {
@@ -108,34 +105,39 @@ const ManageNGOs = () => {
     <div className="flex min-h-screen bg-gray-50">
       <AdminSidebar currentView="ngos" onViewChange={() => {}} />
 
-      <div className="flex-1 ml-[250px] p-8 transition-all">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-6">
+      {/* Main Section */}
+      <div className="flex-1 p-5 md:p-8 transition-all duration-300 md:ml-[250px] ml-0 pt-16 md:pt-10">
+        {/* Header */}
+        <h1 className="text-2xl md:text-3xl font-bold text-[#00ACC1] mb-4 text-center md:text-left">
           NGO Management
         </h1>
 
-        <div className="flex justify-between items-center bg-white p-5 rounded-xl shadow-md border border-gray-100">
-          <h2 className="text-xl font-medium text-gray-700">All Registered NGOs</h2>
+        {/* Top Bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-5 rounded-xl shadow-md border border-gray-100 gap-4">
+          <h2 className="text-lg md:text-xl font-medium text-gray-700 text-center sm:text-left">
+            All Registered NGOs
+          </h2>
           <button
             onClick={() => {
               setFormData({ name: "", email: "", password: "", address: "" });
               setEditMode(false);
               setShowModal(true);
             }}
-            className="bg-[#00ACC1] hover:bg-[#0095A8] text-white px-5 py-2 rounded-lg font-medium shadow-md transition"
+            className="w-full sm:w-auto bg-[#00ACC1] hover:bg-[#0095A8] text-white px-5 py-2 rounded-lg font-medium shadow-md transition"
           >
             + Add New NGO
           </button>
         </div>
 
-        {/* NGO Table */}
-        <div className="mt-6 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          <table className="w-full border-collapse">
+        {/* Table */}
+        <div className="mt-6 bg-white rounded-xl shadow-md border border-gray-100 overflow-x-auto">
+          <table className="w-full border-collapse text-sm md:text-base">
             <thead className="bg-[#00ACC1] text-white">
               <tr>
-                <th className="py-3 px-4 text-left">NGO Name</th>
-                <th className="py-3 px-4 text-left">Address</th>
-                <th className="py-3 px-4 text-left">Contact</th>
-                <th className="py-3 px-4 text-left">Actions</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">NGO Name</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">Address</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">Contact</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -146,25 +148,19 @@ const ManageNGOs = () => {
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   }`}
                 >
-                  <td className="py-3 px-4 font-medium text-gray-700">
-                    {ngo.name}
-                  </td>
-                  <td className="py-3 px-4 text-gray-600">
-                    {ngo.address || "N/A"}
-                  </td>
-                  <td className="py-3 px-4 text-gray-600">
-                    {ngo.contactNumber || "N/A"}
-                  </td>
-                  <td className="py-3 px-4 flex gap-2">
+                  <td className="py-3 px-4 font-medium text-gray-700">{ngo.name}</td>
+                  <td className="py-3 px-4 text-gray-600">{ngo.address || "N/A"}</td>
+                  <td className="py-3 px-4 text-gray-600">{ngo.contactNumber || "N/A"}</td>
+                  <td className="py-3 px-4 flex flex-wrap gap-2">
                     <button
                       onClick={() => handleEdit(ngo)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition"
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition text-sm"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(ngo._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition"
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition text-sm"
                     >
                       Delete
                     </button>
@@ -184,9 +180,9 @@ const ManageNGOs = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 relative">
-            <h2 className="text-2xl font-semibold text-[#00ACC1] text-center mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+            <h2 className="text-xl md:text-2xl font-semibold text-[#00ACC1] text-center mb-4">
               {editMode ? "Edit NGO" : "Add New NGO"}
             </h2>
 
@@ -198,7 +194,7 @@ const ManageNGOs = () => {
                 onChange={handleChange}
                 required
                 placeholder="Enter NGO name"
-                className="w-full p-3 border border-gray-300 rounded-md"
+                className="w-full p-3 border border-gray-300 rounded-md text-sm md:text-base"
               />
 
               <input
@@ -208,7 +204,7 @@ const ManageNGOs = () => {
                 onChange={handleChange}
                 required
                 placeholder="Enter email address"
-                className="w-full p-3 border border-gray-300 rounded-md"
+                className="w-full p-3 border border-gray-300 rounded-md text-sm md:text-base"
               />
 
               {!editMode && (
@@ -219,7 +215,7 @@ const ManageNGOs = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter password"
-                  className="w-full p-3 border border-gray-300 rounded-md"
+                  className="w-full p-3 border border-gray-300 rounded-md text-sm md:text-base"
                 />
               )}
 
@@ -230,7 +226,7 @@ const ManageNGOs = () => {
                 required
                 rows="3"
                 placeholder="Enter address"
-                className="w-full p-3 border border-gray-300 rounded-md"
+                className="w-full p-3 border border-gray-300 rounded-md text-sm md:text-base"
               ></textarea>
 
               <div className="flex justify-end gap-3 mt-4">

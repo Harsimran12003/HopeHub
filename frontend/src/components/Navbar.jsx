@@ -1,41 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../public/logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // ✅ Update layout dynamically when window is resized
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ✅ Hover effect using inline style manipulation
+  const handleMouseEnter = (e) => {
+    e.target.style.transform = "translateY(-2px)";
+    e.target.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
+    e.target.style.filter = "brightness(95%)";
+  };
+
+  const handleMouseLeave = (e) => {
+    e.target.style.transform = "translateY(0)";
+    e.target.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+    e.target.style.filter = "brightness(100%)";
+  };
 
   return (
     <nav style={styles.navbar}>
-      {/* Left - Logo + Brand */}
+      {/* === Left Section (Logo + Brand) === */}
       <div style={styles.left}>
         <img src={logo} alt="Logo" style={styles.logo} />
         <span style={styles.brandName}>HopeHub</span>
       </div>
 
-      {/* Hamburger Button (for mobile) */}
-      <div style={styles.hamburger} onClick={() => setIsOpen(!isOpen)}>
-        <div style={styles.bar}></div>
-        <div style={styles.bar}></div>
-        <div style={styles.bar}></div>
-      </div>
+      {/* === Hamburger Button (Visible on Mobile) === */}
+      {isMobile && (
+        <div style={styles.hamburger} onClick={() => setIsOpen(!isOpen)}>
+          <div style={styles.bar}></div>
+          <div style={styles.bar}></div>
+          <div style={styles.bar}></div>
+        </div>
+      )}
 
-      {/* Center Links */}
+      {/* === Navigation Links === */}
       <div
         style={{
           ...styles.center,
-          ...(isOpen ? styles.showMenu : styles.hideMenu),
+          ...(isMobile
+            ? isOpen
+              ? styles.showMenu
+              : styles.hideMenu
+            : {}),
         }}
       >
-        <Link to="/" style={styles.homeBtn} onClick={() => setIsOpen(false)}>
+        <Link
+          to="/"
+          style={styles.homeBtn}
+          onClick={() => setIsOpen(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           Home
         </Link>
 
-        <Link to="/login" style={styles.loginBtn} onClick={() => setIsOpen(false)}>
+        <Link
+          to="/login"
+          style={styles.loginBtn}
+          onClick={() => setIsOpen(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           Login
         </Link>
 
-        <Link to="/register" style={styles.joinBtn} onClick={() => setIsOpen(false)}>
+        <Link
+          to="/register"
+          style={styles.joinBtn}
+          onClick={() => setIsOpen(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           Join Us
         </Link>
       </div>
@@ -43,7 +88,7 @@ const Navbar = () => {
   );
 };
 
-/* === Base Button Styling === */
+/* === Shared Button Styling === */
 const buttonBase = {
   padding: "10px 18px",
   color: "#fff",
@@ -61,7 +106,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "12px 40px",
-    background: "rgba(0, 172, 193, 0.9)", // translucent glass-like
+    background: "rgba(0, 172, 193, 0.9)",
     backdropFilter: "blur(8px)",
     WebkitBackdropFilter: "blur(8px)",
     position: "fixed",
@@ -78,7 +123,7 @@ const styles = {
     gap: "12px",
   },
   logo: {
-    height: "48px",
+    height: "45px",
     filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
   },
   brandName: {
@@ -95,22 +140,21 @@ const styles = {
     alignItems: "center",
   },
 
-  // Buttons (same colors, but modern hover)
   homeBtn: {
     ...buttonBase,
-    backgroundColor: "#42A5F5", // blue
+    backgroundColor: "#42A5F5", // Blue
   },
   loginBtn: {
     ...buttonBase,
-    backgroundColor: "#FF7043", // orange
+    backgroundColor: "#FF7043", // Orange
   },
   joinBtn: {
     ...buttonBase,
-    backgroundColor: "#66BB6A", // green
+    backgroundColor: "#66BB6A", // Green
   },
 
   hamburger: {
-    display: "none",
+    display: "flex",
     flexDirection: "column",
     cursor: "pointer",
   },
@@ -122,8 +166,9 @@ const styles = {
     borderRadius: "2px",
     transition: "0.3s ease",
   },
+
   hideMenu: {
-    display: "flex",
+    display: "none",
   },
   showMenu: {
     display: "flex",
@@ -138,29 +183,5 @@ const styles = {
     boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
   },
 };
-
-// === Hover Animation (JS workaround for inline styles) ===
-document.addEventListener("mouseover", (e) => {
-  const link = e.target.closest("a");
-  if (link) {
-    link.style.transform = "translateY(-2px)";
-    link.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
-    link.style.filter = "brightness(95%)";
-  }
-});
-document.addEventListener("mouseout", (e) => {
-  const link = e.target.closest("a");
-  if (link) {
-    link.style.transform = "translateY(0)";
-    link.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
-    link.style.filter = "brightness(100%)";
-  }
-});
-
-// === Responsive tweak for small screens ===
-if (window.innerWidth <= 768) {
-  styles.center.display = "none";
-  styles.hamburger.display = "flex";
-}
 
 export default Navbar;
